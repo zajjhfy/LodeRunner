@@ -49,6 +49,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -98,7 +101,7 @@ GameObject:
   - component: {fileID: 5863468213902164021}
   m_Layer: 6
   m_Name: Brick
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -136,6 +139,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -179,6 +185,7 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4698720013414856375}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -202,7 +209,8 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -213,7 +221,6 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &5863468213902164021
@@ -243,9 +250,9 @@ MonoBehaviour:
   - {fileID: -3023531702214086721, guid: 145b8674fd1ec1a4ebb33d901d477c8e, type: 3}
   - {fileID: -497662145320687926, guid: 145b8674fd1ec1a4ebb33d901d477c8e, type: 3}
   - {fileID: -4960773223088010030, guid: 145b8674fd1ec1a4ebb33d901d477c8e, type: 3}
-  _particlesTransform: {fileID: 6377514183606414932}
   _particleSprites:
   - {fileID: -4584684694930064658, guid: 48f657359ace4324db44e6d906ee378b, type: 3}
   - {fileID: 9158996608407439271, guid: 48f657359ace4324db44e6d906ee378b, type: 3}
   - {fileID: -4934705319593054426, guid: 48f657359ace4324db44e6d906ee378b, type: 3}
   - {fileID: -8026644790210475977, guid: 48f657359ace4324db44e6d906ee378b, type: 3}
+  _particlesTransform: {fileID: 6377514183606414932}
