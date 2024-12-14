@@ -17,17 +17,18 @@ public class Character : MonoBehaviour
     private States _currentState = States.Run;
     private PlayerController _playerController;
     private Animator _animator;
-    private BoxCollider2D _collider;
+    private CapsuleCollider2D _collider;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
-    private int _moveSpeed = 7;
+    private int _moveSpeed = 5;
 
     private const string IS_RUNNING = "isRunning";
+    private const string IS_FALLING = "isFalling";
     
     private void Awake(){
         _animator = GetComponent<Animator>();
         _sr = GetComponent<SpriteRenderer>();
-        _collider = GetComponent<BoxCollider2D>();
+        _collider = GetComponent<CapsuleCollider2D>();
         _rb = GetComponent<Rigidbody2D>();
     }
 
@@ -48,13 +49,13 @@ public class Character : MonoBehaviour
     }
 
     private void CheckState(){
-        //Debug.Log(_currentState);
         switch(_currentState){
             case States.Run:
                 if(!CheckForGround()) {
-                    ChangeToFallSprite();
-                    ChangeState(States.Fall);
-                    break;
+                     SwitchRunAnimation(false);
+                     SwitchFallAnimation(true);
+                     ChangeState(States.Fall);
+                     break;
                 }
                 Run();
                 break;
@@ -66,6 +67,7 @@ public class Character : MonoBehaviour
                 break;
             case States.Fall:
                 if(CheckForGround()){
+                    SwitchFallAnimation(false);
                     ChangeState(States.Run);
                     break;
                 }
@@ -84,6 +86,7 @@ public class Character : MonoBehaviour
 
     private void Fall()
     {
+        _rb.MovePosition(transform.position + Vector3.down * Time.fixedDeltaTime * _moveSpeed);
     }
 
     private void Break()
@@ -98,23 +101,26 @@ public class Character : MonoBehaviour
 
     private void Run()
     {
-        Debug.Log(CheckForGround());
         var moveDirection = _playerController.GetMovementVector();
         FlipSprite(moveDirection);
         if(moveDirection == Vector3.right || moveDirection == Vector3.left){
-            StartRunAnimation(true);
+            SwitchRunAnimation(true);
             Move(moveDirection);
         }
         else{
-            StartRunAnimation(false);
+            SwitchRunAnimation(false);
         }
     }
 
     private void Move(Vector3 moveDirection){
-        _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+        bool isBlocked = moveDirection == Vector3.right ? CheckForRightObstacle() : CheckForLeftObstacle();
+        if(!isBlocked){
+            _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+        }
     }
 
-    private void StartRunAnimation(bool toggle) => _animator.SetBool(IS_RUNNING, toggle);
+    private void SwitchRunAnimation(bool toggle) => _animator.SetBool(IS_RUNNING, toggle);
+    private void SwitchFallAnimation(bool toggle) => _animator.SetBool(IS_FALLING, toggle);
 
     private void ChangeState(States state) => _currentState = state;
 
@@ -123,10 +129,31 @@ public class Character : MonoBehaviour
         else if(direction == Vector3.left) _sr.flipX = true;
     }
 
-    private void ChangeToFallSprite() => _sr.sprite = _fallingSprite;
 
     private bool CheckForGround(){
-        return Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.05f, _layerMasks[1]);
+        var ray = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.05f, _layerMasks[1]);
+        if(ray.transform != null && ray.distance == 0){
+            _rb.MovePosition(transform.position + new Vector3(0f, 0.05f, 0f));
+        }
+        return ray;
+    }
+
+    private bool CheckForRightObstacle(){
+        var ray = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.right, 0.05f, _layerMasks[1]);
+        if(ray.transform != null && ray.distance == 0){
+            _rb.MovePosition(transform.position + new Vector3(-.05f, 0f, 0f));
+        }
+        Debug.Log($"ray-right: {ray.distance}");
+        return ray;
+    }
+
+    private bool CheckForLeftObstacle(){
+        var ray = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.left, 0.05f, _layerMasks[1]);
+        if(ray.transform != null && ray.distance == 0){
+            _rb.MovePosition(transform.position + new Vector3(.05f, 0f, 0f));
+        }
+        Debug.Log($"ray-left: {ray.distance}");
+        return ray;
     }
 
 }

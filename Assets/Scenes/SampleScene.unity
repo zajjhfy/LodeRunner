@@ -4093,7 +4093,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 535938551}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -4112,6 +4112,43 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!70 &535938559
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535938551}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.0011796951, y: -0.055749178}
+  m_Size: {x: 0.82886696, y: 0.8971245}
+  m_Direction: 0
 --- !u!4 &537150461 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 533007577280697544, guid: c72d7d2087ee7584ab22b506f73a2b4a, type: 3}
@@ -6948,7 +6985,8 @@ PrefabInstance:
       propertyPath: m_GravityScale
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3869444552110178816, guid: da92531a95c9ea24098b6cd5b09b36bc, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -6958,6 +6996,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2551999139473358436, guid: da92531a95c9ea24098b6cd5b09b36bc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 535938558}
+    - targetCorrespondingSourceObject: {fileID: 2551999139473358436, guid: da92531a95c9ea24098b6cd5b09b36bc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 535938559}
   m_SourcePrefab: {fileID: 100100000, guid: da92531a95c9ea24098b6cd5b09b36bc, type: 3}
 --- !u!4 &962692904 stripped
 Transform:
