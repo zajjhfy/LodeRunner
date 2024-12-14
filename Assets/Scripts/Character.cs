@@ -23,6 +23,8 @@ public class Character : MonoBehaviour
     private SpriteRenderer _sr;
     private int _moveSpeed = 5;
     private string[] _animations;
+    private bool inLadderCollider = false;
+    private Vector2 _ladderVector;
 
     private const string IS_RUNNING = "isRunning";
     private const string IS_FALLING = "isFalling";
@@ -125,6 +127,7 @@ public class Character : MonoBehaviour
             StrictAnimationSwitch(IS_IDLE_CLIMBING);
             ClimbAnimationSwitch(true);
             LadderMove(moveDirection);
+            transform.position = new Vector2(_ladderVector.x, transform.position.y);
         }
         else if(moveDirection == Vector3.right || moveDirection == Vector3.left){
             StrictAnimationSwitch(IS_RUNNING);
@@ -143,6 +146,14 @@ public class Character : MonoBehaviour
             StrictAnimationSwitch(IS_RUNNING);
             Move(moveDirection);
         }
+        else if(moveDirection == Vector3.down){
+            var ray = CheckForLadder();
+            if(ray){
+                _ladderVector = new Vector2(ray.transform.position.x, transform.position.y);
+                inLadderCollider = true;
+                ChangeState(States.Climb);
+            }
+        }
         else{
             StrictAnimationSwitch();
         }
@@ -160,8 +171,7 @@ public class Character : MonoBehaviour
     }
 
     private void LadderMove(Vector3 moveDirection){
-        Debug.Log(CheckForGround());
-        bool isBlocked = moveDirection == Vector3.down ? CheckForGround() : false;
+        bool isBlocked = moveDirection == Vector3.down ? CheckForGroundOnly() : false;
         if(!isBlocked){
             _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
         }
@@ -192,6 +202,24 @@ public class Character : MonoBehaviour
 
 
     private bool CheckForGround(){
+        var ray = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.05f, _layerMasks[1]);
+        if(ray.transform != null && ray.distance == 0){
+            _rb.MovePosition(transform.position + new Vector3(0f, 0.05f, 0f));
+        }
+        else if(!ray){
+            ray = CheckForLadder();
+            if(ray.transform != null && ray.distance == 0 && !inLadderCollider){
+                _rb.MovePosition(transform.position + new Vector3(0f, 0.05f, 0f));
+            }
+        }
+        return ray;
+    }
+
+    private RaycastHit2D CheckForLadder(){
+        return Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.05f, _layerMasks[0]);
+    }
+
+    private bool CheckForGroundOnly(){
         var ray = Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.05f, _layerMasks[1]);
         if(ray.transform != null && ray.distance == 0){
             _rb.MovePosition(transform.position + new Vector3(0f, 0.05f, 0f));
@@ -227,10 +255,10 @@ public class Character : MonoBehaviour
                     ChangeState(States.Swing);
                     break;
                 case "Ladder":
-                    float colliderXpos = collider.gameObject.transform.position.x;
+                    inLadderCollider = true;
+                    _ladderVector = new Vector2(collider.gameObject.transform.position.x, transform.position.y);
                     Vector3 moveDirection = _playerController.GetMovementVector();
                     if(moveDirection == Vector3.down || moveDirection == Vector3.up){
-                        _rb.MovePosition(new Vector3(colliderXpos, transform.position.y, transform.position.z));
                         ChangeState(States.Climb);
                         break;
                     }
@@ -246,6 +274,7 @@ public class Character : MonoBehaviour
         else if(collider.gameObject.tag == "Ladder" && _currentState == States.Climb){
             ChangeState(States.Run);
         }
+        inLadderCollider = false;
     }
 
 }
