@@ -6,10 +6,6 @@ public class Character : MonoBehaviour
     private enum Direction {Left, Right}
     private enum States {Run, Climb, Break, Fall, Swing}
 
-    [Header("Sprites")]
-    [SerializeField] private Sprite _brickBreakingSprite;
-    [SerializeField] private Sprite _climbingSprite;
-
     [Header("Layers")]
     [SerializeField] private LayerMask[] _layerMasks;
 
@@ -21,10 +17,10 @@ public class Character : MonoBehaviour
     private CapsuleCollider2D _collider;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
+    private Vector2 _ladderVector;
     private int _moveSpeed = 5;
     private string[] _animations;
     private bool inLadderCollider = false;
-    private Vector2 _ladderVector;
 
     private const string IS_RUNNING = "isRunning";
     private const string IS_FALLING = "isFalling";
