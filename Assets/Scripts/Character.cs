@@ -220,8 +220,7 @@ public class Character : MonoBehaviour
             switch(collider.gameObject.tag){
                 case "Rope":
                     float colliderYpos = collider.gameObject.transform.position.y;
-                    if(transform.position.y *-1 > colliderYpos * -1){
-                        Debug.Log($"{transform.position.y} : player; {colliderYpos} : rope");
+                    if((transform.position.y-0.05f) *-1 < colliderYpos * -1){
                         ChangeState(States.Fall);
                         break;
                     } 
