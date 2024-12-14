@@ -40,7 +40,16 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
                     ""name"": ""Break"",
                     ""type"": ""Button"",
                     ""id"": ""80231f82-79ec-4675-bb2f-7dab47680742"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""e43cb5b3-d06e-49b8-8dae-2682e2917969"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -123,6 +132,17 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
                     ""action"": ""Break"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d3c426dd-8cd5-4b5f-8a09-1abd4b7ac968"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -133,6 +153,7 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
         m_Input = asset.FindActionMap("Input", throwIfNotFound: true);
         m_Input_Movement = m_Input.FindAction("Movement", throwIfNotFound: true);
         m_Input_Break = m_Input.FindAction("Break", throwIfNotFound: true);
+        m_Input_Pause = m_Input.FindAction("Pause", throwIfNotFound: true);
     }
 
     ~@PlayerControllerIA()
@@ -201,12 +222,14 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
     private List<IInputActions> m_InputActionsCallbackInterfaces = new List<IInputActions>();
     private readonly InputAction m_Input_Movement;
     private readonly InputAction m_Input_Break;
+    private readonly InputAction m_Input_Pause;
     public struct InputActions
     {
         private @PlayerControllerIA m_Wrapper;
         public InputActions(@PlayerControllerIA wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Input_Movement;
         public InputAction @Break => m_Wrapper.m_Input_Break;
+        public InputAction @Pause => m_Wrapper.m_Input_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Input; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -222,6 +245,9 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
             @Break.started += instance.OnBreak;
             @Break.performed += instance.OnBreak;
             @Break.canceled += instance.OnBreak;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
         }
 
         private void UnregisterCallbacks(IInputActions instance)
@@ -232,6 +258,9 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
             @Break.started -= instance.OnBreak;
             @Break.performed -= instance.OnBreak;
             @Break.canceled -= instance.OnBreak;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
         }
 
         public void RemoveCallbacks(IInputActions instance)
@@ -253,5 +282,6 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnBreak(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }

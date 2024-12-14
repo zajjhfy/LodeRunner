@@ -9,13 +9,14 @@ public class Character : MonoBehaviour
     [Header("Sprites")]
     [SerializeField] private Sprite _brickBreakingSprite;
     [SerializeField] private Sprite _climbingSprite;
-    [SerializeField] private Sprite _fallingSprite;
 
     [Header("Layers")]
     [SerializeField] private LayerMask[] _layerMasks;
 
+    [Header("References")]
+    [SerializeField] private PlayerController _playerController;
+
     private States _currentState = States.Run;
-    private PlayerController _playerController;
     private Animator _animator;
     private CapsuleCollider2D _collider;
     private Rigidbody2D _rb;
@@ -34,7 +35,6 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
-        _playerController = new PlayerController();
         _playerController.OnBreakButtonPressed += _playerOnBreakButtonPressed;
     }
 
