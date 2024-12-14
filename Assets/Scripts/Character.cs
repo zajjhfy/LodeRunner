@@ -28,6 +28,8 @@ public class Character : MonoBehaviour
     private const string IS_FALLING = "isFalling";
     private const string IS_SWINGING = "isSwinging";
     private const string IS_IDLE_SWINGING = "isIdleSwinging";
+    private const string IS_CLIMBING = "isClimbing";
+    private const string IS_IDLE_CLIMBING = "isIdleClimbing";
     
     private void Awake(){
         _animator = GetComponent<Animator>();
@@ -43,7 +45,7 @@ public class Character : MonoBehaviour
     }
 
     private void GetAnimations(){
-        _animations = new [] {IS_RUNNING, IS_FALLING, IS_SWINGING, IS_IDLE_SWINGING};
+        _animations = new [] {IS_RUNNING, IS_FALLING, IS_SWINGING, IS_IDLE_SWINGING, IS_IDLE_CLIMBING, IS_CLIMBING};
     }
 
     private void _playerOnBreakButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -57,7 +59,6 @@ public class Character : MonoBehaviour
     }
 
     private void CheckState(){
-        Debug.Log(_currentState);
         switch(_currentState){
             case States.Run:
                 if(!CheckForGround()) {
@@ -97,6 +98,8 @@ public class Character : MonoBehaviour
             RopeMove(moveDirection);
         }
         else if(moveDirection == Vector3.down){
+            StrictAnimationSwitch(IS_FALLING);
+            _rb.MovePosition(transform.position + Vector3.down * Time.fixedDeltaTime * _moveSpeed);
             ChangeState(States.Fall);
         }
         else{
@@ -116,7 +119,20 @@ public class Character : MonoBehaviour
 
     private void Climb()
     {
-        throw new NotImplementedException();
+        var moveDirection = _playerController.GetMovementVector();
+        FlipSprite(moveDirection);
+        if(moveDirection == Vector3.down || moveDirection == Vector3.up){
+            StrictAnimationSwitch(IS_IDLE_CLIMBING);
+            ClimbAnimationSwitch(true);
+            LadderMove(moveDirection);
+        }
+        else if(moveDirection == Vector3.right || moveDirection == Vector3.left){
+            StrictAnimationSwitch(IS_RUNNING);
+            Move(moveDirection);
+        }
+        else{
+            StrictAnimationSwitch(IS_IDLE_CLIMBING);
+        }
     }
 
     private void Run()
@@ -143,7 +159,16 @@ public class Character : MonoBehaviour
         _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
     }
 
+    private void LadderMove(Vector3 moveDirection){
+        Debug.Log(CheckForGround());
+        bool isBlocked = moveDirection == Vector3.down ? CheckForGround() : false;
+        if(!isBlocked){
+            _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+        }
+    }
+
     private void SwingAnimationSwitch(bool toggle) => _animator.SetBool(IS_SWINGING, toggle);
+    private void ClimbAnimationSwitch(bool toggle) => _animator.SetBool(IS_CLIMBING, toggle);
 
     private void StrictAnimationSwitch(string animationToTurn){
         foreach (var item in _animations){
@@ -191,13 +216,35 @@ public class Character : MonoBehaviour
     }
 
     private void OnTriggerStay2D(Collider2D collider){
-        if(collider.gameObject.tag == "Rope"){
-            ChangeState(States.Swing);
+        if(_currentState != States.Swing && _currentState != States.Climb){
+            switch(collider.gameObject.tag){
+                case "Rope":
+                    float colliderYpos = collider.gameObject.transform.position.y;
+                    if(transform.position.y *-1 > colliderYpos * -1){
+                        Debug.Log($"{transform.position.y} : player; {colliderYpos} : rope");
+                        ChangeState(States.Fall);
+                        break;
+                    } 
+                    ChangeState(States.Swing);
+                    break;
+                case "Ladder":
+                    float colliderXpos = collider.gameObject.transform.position.x;
+                    Vector3 moveDirection = _playerController.GetMovementVector();
+                    if(moveDirection == Vector3.down || moveDirection == Vector3.up){
+                        _rb.MovePosition(new Vector3(colliderXpos, transform.position.y, transform.position.z));
+                        ChangeState(States.Climb);
+                        break;
+                    }
+                    break;
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D collider){
-        if(collider.gameObject.tag == "Rope"){
+        if(collider.gameObject.tag == "Rope" && _currentState == States.Swing){
+            ChangeState(States.Run);
+        }
+        else if(collider.gameObject.tag == "Ladder" && _currentState == States.Climb){
             ChangeState(States.Run);
         }
     }
