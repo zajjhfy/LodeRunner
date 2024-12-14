@@ -22,6 +22,7 @@ public class Character : MonoBehaviour
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private int _moveSpeed = 5;
+    private bool _onRope;
 
     private const string IS_RUNNING = "isRunning";
     private const string IS_FALLING = "isFalling";
@@ -143,7 +144,6 @@ public class Character : MonoBehaviour
         if(ray.transform != null && ray.distance == 0){
             _rb.MovePosition(transform.position + new Vector3(-.05f, 0f, 0f));
         }
-        Debug.Log($"ray-right: {ray.distance}");
         return ray;
     }
 
@@ -152,8 +152,21 @@ public class Character : MonoBehaviour
         if(ray.transform != null && ray.distance == 0){
             _rb.MovePosition(transform.position + new Vector3(.05f, 0f, 0f));
         }
-        Debug.Log($"ray-left: {ray.distance}");
         return ray;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider){
+        if(collider.gameObject.tag == "Rope"){
+            _onRope = true;
+            ChangeState(States.Swing);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collider){
+        if(collider.gameObject.tag == "Rope"){
+            _onRope = false;
+            ChangeState(States.Run);
+        }
     }
 
 }
