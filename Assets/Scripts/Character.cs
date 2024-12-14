@@ -22,10 +22,12 @@ public class Character : MonoBehaviour
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private int _moveSpeed = 5;
-    private bool _onRope;
+    private string[] _animations;
 
     private const string IS_RUNNING = "isRunning";
     private const string IS_FALLING = "isFalling";
+    private const string IS_SWINGING = "isSwinging";
+    private const string IS_IDLE_SWINGING = "isIdleSwinging";
     
     private void Awake(){
         _animator = GetComponent<Animator>();
@@ -36,7 +38,12 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
+        GetAnimations();
         _playerController.OnBreakButtonPressed += _playerOnBreakButtonPressed;
+    }
+
+    private void GetAnimations(){
+        _animations = new [] {IS_RUNNING, IS_FALLING, IS_SWINGING, IS_IDLE_SWINGING};
     }
 
     private void _playerOnBreakButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -50,11 +57,11 @@ public class Character : MonoBehaviour
     }
 
     private void CheckState(){
+        Debug.Log(_currentState);
         switch(_currentState){
             case States.Run:
                 if(!CheckForGround()) {
-                     SwitchRunAnimation(false);
-                     SwitchFallAnimation(true);
+                     StrictAnimationSwitch(IS_FALLING);
                      ChangeState(States.Fall);
                      break;
                 }
@@ -68,7 +75,7 @@ public class Character : MonoBehaviour
                 break;
             case States.Fall:
                 if(CheckForGround()){
-                    SwitchFallAnimation(false);
+                    StrictAnimationSwitch();
                     ChangeState(States.Run);
                     break;
                 }
@@ -82,7 +89,19 @@ public class Character : MonoBehaviour
 
     private void Swing()
     {
-        throw new NotImplementedException();
+        var moveDirection = _playerController.GetMovementVector();
+        FlipSprite(moveDirection);
+        if(moveDirection == Vector3.right || moveDirection == Vector3.left){
+            StrictAnimationSwitch(IS_IDLE_SWINGING);
+            SwingAnimationSwitch(true);
+            RopeMove(moveDirection);
+        }
+        else if(moveDirection == Vector3.down){
+            ChangeState(States.Fall);
+        }
+        else{
+            StrictAnimationSwitch(IS_IDLE_SWINGING);
+        }
     }
 
     private void Fall()
@@ -105,11 +124,11 @@ public class Character : MonoBehaviour
         var moveDirection = _playerController.GetMovementVector();
         FlipSprite(moveDirection);
         if(moveDirection == Vector3.right || moveDirection == Vector3.left){
-            SwitchRunAnimation(true);
+            StrictAnimationSwitch(IS_RUNNING);
             Move(moveDirection);
         }
         else{
-            SwitchRunAnimation(false);
+            StrictAnimationSwitch();
         }
     }
 
@@ -120,8 +139,24 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void SwitchRunAnimation(bool toggle) => _animator.SetBool(IS_RUNNING, toggle);
-    private void SwitchFallAnimation(bool toggle) => _animator.SetBool(IS_FALLING, toggle);
+    private void RopeMove(Vector3 moveDirection){
+        _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+    }
+
+    private void SwingAnimationSwitch(bool toggle) => _animator.SetBool(IS_SWINGING, toggle);
+
+    private void StrictAnimationSwitch(string animationToTurn){
+        foreach (var item in _animations){
+            if(item == animationToTurn) _animator.SetBool(item, true);
+            else _animator.SetBool(item, false);
+        }
+    }
+
+    private void StrictAnimationSwitch(){
+        foreach (var item in _animations){
+            _animator.SetBool(item, false);
+        }
+    }
 
     private void ChangeState(States state) => _currentState = state;
 
@@ -155,16 +190,14 @@ public class Character : MonoBehaviour
         return ray;
     }
 
-    private void OnTriggerEnter2D(Collider2D collider){
+    private void OnTriggerStay2D(Collider2D collider){
         if(collider.gameObject.tag == "Rope"){
-            _onRope = true;
             ChangeState(States.Swing);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collider){
         if(collider.gameObject.tag == "Rope"){
-            _onRope = false;
             ChangeState(States.Run);
         }
     }
