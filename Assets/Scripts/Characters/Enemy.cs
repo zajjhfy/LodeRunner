@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerController _playerController;
+    [SerializeField] private EnemyController _enemyController;
 
     private States _currentState = States.Run;
     private Animator _animator;
@@ -18,7 +19,8 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private Vector2 _ladderVector;
-    private int _moveSpeed = 5;
+    private Vector2 moveDirectionToPlayer;
+    private float _moveSpeed = 2.5f;
     private string[] _animations;
     private bool inLadderCollider = false;
 
@@ -103,7 +105,7 @@ public class Enemy : MonoBehaviour
 
     private void Climb()
     {
-        var moveDirection = _playerController.GetMovementVector();
+        var moveDirection = _enemyController.GetMoveDirectionY(transform);
         FlipSprite(moveDirection);
         if(moveDirection == Vector3.down || moveDirection == Vector3.up){
             StrictAnimationSwitch(IS_IDLE_CLIMBING);
@@ -122,23 +124,33 @@ public class Enemy : MonoBehaviour
 
     private void Run()
     {
-        var moveDirection = _playerController.GetMovementVector();
-        FlipSprite(moveDirection);
-        if(moveDirection == Vector3.right || moveDirection == Vector3.left){
-            StrictAnimationSwitch(IS_RUNNING);
-            Move(moveDirection);
-        }
-        else if(moveDirection == Vector3.down){
-            var ray = CheckForLadder();
-            if(ray){
-                _ladderVector = new Vector2(ray.transform.position.x, transform.position.y);
-                inLadderCollider = true;
-                ChangeState(States.Climb);
-            }
+        float playerXPos = _enemyController.GetPlayerXPosition();
+        float playerYPos = _enemyController.GetPlayerYPosition();
+        Vector3 moveDirection;
+        // проверка на -y
+        if(_enemyController.GetPlayerIsUp(transform)){
+            moveDirection = _enemyController.RaycastLaddersUp(transform);
+            MoveToLadder(moveDirection);
         }
         else{
-            StrictAnimationSwitch();
+            Move(playerXPos);
         }
+    }
+
+    private void Move(float xPos){
+        Vector3 moveDirection;
+        if(xPos < transform.position.x){
+            moveDirection = Vector3.left;
+            _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+        }
+        else if(xPos > transform.position.x){
+            moveDirection = Vector3.right;
+            _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+        }
+    }
+
+    private void MoveToLadder(Vector3 moveDirection){
+        _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
     }
 
     private void Move(Vector3 moveDirection){
@@ -239,8 +251,9 @@ public class Enemy : MonoBehaviour
                 case "Ladder":
                     inLadderCollider = true;
                     _ladderVector = new Vector2(collider.gameObject.transform.position.x, transform.position.y);
-                    Vector3 moveDirection = _playerController.GetMovementVector();
-                    if(moveDirection == Vector3.down || moveDirection == Vector3.up){
+                    bool playerIsUp = _enemyController.GetPlayerIsUp(transform);
+                    bool playerIsDown = _enemyController.GetPlayerIsDown(transform);
+                    if(playerIsUp || playerIsDown){
                         ChangeState(States.Climb);
                         break;
                     }
