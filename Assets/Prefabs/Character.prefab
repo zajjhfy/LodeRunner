@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 5561581305782670893}
   - component: {fileID: 6886357452816617046}
   - component: {fileID: 1390606157419909332}
-  - component: {fileID: 3869444552110178816}
+  - component: {fileID: 7411031890842616747}
+  - component: {fileID: 3741918071509730008}
+  - component: {fileID: 4230998352969732915}
   m_Layer: 7
   m_Name: Character
   m_TagString: Player
@@ -28,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 2551999139473358436}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.55, y: 0.44, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -101,20 +103,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fc547095a8d42b489cbdb064fb58f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _brickBreakingSprite: {fileID: 8273938504894967586, guid: 08c4bc49a1383da49b7a64e3fb1da073, type: 3}
-  _climbingSprite: {fileID: 6090727718865022391, guid: 6e1c4c56e73b13445a730552fa08464d, type: 3}
-  _fallingSprite: {fileID: -7341055543727535686, guid: 6d7c37ffa5b76c24ab83b1f59351e06e, type: 3}
-  _runSprites:
-  - {fileID: 504466458811672723, guid: 53903f2a579208743b2d772ef08c20cc, type: 3}
-  - {fileID: 869020396826479466, guid: 53903f2a579208743b2d772ef08c20cc, type: 3}
-  - {fileID: 7370902049799022295, guid: 53903f2a579208743b2d772ef08c20cc, type: 3}
   _layerMasks:
   - serializedVersion: 2
     m_Bits: 8
   - serializedVersion: 2
     m_Bits: 64
---- !u!61 &3869444552110178816
-BoxCollider2D:
+  _playerController: {fileID: 0}
+--- !u!95 &7411031890842616747
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2551999139473358436}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a1c089315a404174bb58c7dd03ea6e27, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!50 &3741918071509730008
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2551999139473358436}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!70 &4230998352969732915
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -147,15 +192,6 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.00058308244, y: -0.04031995}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.8354245, y: 0.92169195}
-  m_EdgeRadius: 0
+  m_Offset: {x: -0.0011796951, y: -0.055749178}
+  m_Size: {x: 0.82886696, y: 0.8971245}
+  m_Direction: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class Character : MonoBehaviour
@@ -21,6 +22,7 @@ public class Character : MonoBehaviour
     private int _moveSpeed = 5;
     private string[] _animations;
     private bool inLadderCollider = false;
+    private bool isMoving = false;
 
     private const string IS_RUNNING = "isRunning";
     private const string IS_FALLING = "isFalling";
@@ -28,6 +30,7 @@ public class Character : MonoBehaviour
     private const string IS_IDLE_SWINGING = "isIdleSwinging";
     private const string IS_CLIMBING = "isClimbing";
     private const string IS_IDLE_CLIMBING = "isIdleClimbing";
+    private const string IS_BREAKING = "isBreaking";
     
     private void Awake(){
         _animator = GetComponent<Animator>();
@@ -48,7 +51,48 @@ public class Character : MonoBehaviour
 
     private void _playerOnBreakButtonPressed(object sender, ButtonPressedEventArgs e)
     {
-        throw new NotImplementedException();
+        if(_currentState == States.Run){
+            if(e.key == KeyCode.Z && _sr.flipX == true && !isMoving){
+                Brick brick = TryGetBrick();
+                if(brick != null){
+                    brick.Break(out bool toggled);
+                    if(toggled){
+                        _animator.SetTrigger(IS_BREAKING);
+                        _sr.flipX = !_sr.flipX;
+                        ChangeState(States.Break);
+                    }
+                }
+            }
+            else if(e.key == KeyCode.X && _sr.flipX == false && !isMoving){
+                Brick brick = TryGetBrick();
+                if(brick != null){
+                    brick.Break(out bool toggled);
+                    if(toggled){
+                        _animator.SetTrigger(IS_BREAKING);
+                        _sr.flipX = !_sr.flipX;
+                        ChangeState(States.Break);
+                    }
+                }
+            }
+        }
+    }
+
+    private Brick TryGetBrick(){
+        Vector2 modifiedOrigin;
+        if(_sr.flipX == false){
+            modifiedOrigin = new Vector2(transform.position.x+0.85f, transform.position.y-1);
+        }
+        else{
+            modifiedOrigin = new Vector2(transform.position.x-0.85f, transform.position.y-1);
+        }
+
+        var ray = Physics2D.Raycast(modifiedOrigin, Vector2.down, 0.1f, _layerMasks[1]);
+
+        if(ray.transform != null){
+            bool gotBrick = ray.transform.gameObject.TryGetComponent<Brick>(out Brick brick);
+            if(gotBrick) return brick;
+        }
+        return null;
     }
 
     private void FixedUpdate()
@@ -112,7 +156,11 @@ public class Character : MonoBehaviour
 
     private void Break()
     {
-        throw new NotImplementedException();
+        int clipInfo = _animator.GetCurrentAnimatorClipInfo(0).Where(x => x.clip.name == "Break").Count();
+        if(clipInfo == 0){ 
+            _sr.flipX = !_sr.flipX;
+            ChangeState(States.Run);
+        }
     }
 
     private void Climb()
@@ -139,10 +187,12 @@ public class Character : MonoBehaviour
         var moveDirection = _playerController.GetMovementVector();
         FlipSprite(moveDirection);
         if(moveDirection == Vector3.right || moveDirection == Vector3.left){
+            isMoving = true;
             StrictAnimationSwitch(IS_RUNNING);
             Move(moveDirection);
         }
         else if(moveDirection == Vector3.down){
+            isMoving = false;
             var ray = CheckForLadder();
             if(ray){
                 _ladderVector = new Vector2(ray.transform.position.x, transform.position.y);
@@ -151,6 +201,7 @@ public class Character : MonoBehaviour
             }
         }
         else{
+            isMoving = false;
             StrictAnimationSwitch();
         }
     }

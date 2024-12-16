@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class ButtonPressedEventArgs : EventArgs{
-    public InputControl control;
+    public KeyCode key;
 }
 
 public class PlayerController: MonoBehaviour
@@ -40,7 +40,14 @@ public class PlayerController: MonoBehaviour
 
     private void _playerControllerIA_Input_Break_performed(InputAction.CallbackContext context)
     {
-        OnBreakButtonPressed?.Invoke(this, new ButtonPressedEventArgs{control = context.control});
+        KeyCode keyCode = KeyCode.None;
+        if(char.Parse(context.control.name) == 'z'){
+            keyCode = KeyCode.Z;
+        }
+        else if(char.Parse(context.control.name) == 'x'){
+            keyCode = KeyCode.X;
+        }
+        OnBreakButtonPressed?.Invoke(this, new ButtonPressedEventArgs{key = keyCode});
     }
 
     public Vector3 GetMovementVector(){

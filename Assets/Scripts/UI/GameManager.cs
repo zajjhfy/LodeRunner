@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     private void _controller_OnExitButtonPressed(object sender, EventArgs e)
     {
         _controller.DisableInputMap();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(0);
     }
 
     private void _controller_OnPauseButtonPressed(object sender, EventArgs e)

@@ -8,4 +8,5 @@ public class Candy : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    
 }
