@@ -135,6 +135,12 @@ public class Enemy : MonoBehaviour
         else if(_enemyController.GetPlayerIsDown(transform)){
             moveDirection = _enemyController.RaycastLaddersDown(transform);
             MoveToLadder(moveDirection);
+            var ray = CheckForLadder();
+            if(ray){
+                _ladderVector = new Vector2(ray.transform.position.x, transform.position.y);
+                inLadderCollider = true;
+                ChangeState(States.Climb);
+            }
         }
         else{
             Move(playerXPos);

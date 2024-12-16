@@ -68,38 +68,32 @@ public class EnemyController : MonoBehaviour
         float rightDistanceToPlayer = 0f;
         float leftDistanceToPlayer = 0f;
         float distance = Math.Abs(enemyTransform.position.x) + 12f;
+        Vector3 origin = new Vector3(enemyTransform.position.x, enemyTransform.position.y-1f);
 
-        var ray = Physics2D.Raycast(enemyTransform.position, Vector2.right, distance, _ladderMask);
-
+        var ray = Physics2D.Raycast(origin, Vector2.right, distance, _ladderMask);
+        Debug.DrawRay(origin, Vector3.right * distance, Color.red);
         if(ray.transform != null){
             if(ray.transform.gameObject.CompareTag("Ladder")){
-
                 var ladderPos = ray.transform.gameObject.transform.position;
-                ray = Physics2D.Raycast(ladderPos, Vector3.down, 1f, _groundMask);
 
-                if(ray.transform == null){
-                    ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
-
-                    if(ray.transform != null){
-                        rightDistanceToPlayer = ray.distance;
-                    }
+                ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
+                Debug.DrawRay(ladderPos, (_playerTransform.position - ladderPos).normalized * 25f, Color.red);
+                if(ray.transform != null){
+                    rightDistanceToPlayer = ray.distance;
                 }
             }
         }
 
-        ray = Physics2D.Raycast(enemyTransform.position, Vector2.left, distance, _ladderMask);
-
+        ray = Physics2D.Raycast(origin, Vector2.left, distance, _ladderMask);
+        Debug.DrawRay(origin, Vector3.left * distance, Color.red);
         if(ray.transform != null){
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
-                ray = Physics2D.Raycast(ladderPos, Vector3.down, 1f, _groundMask);
-
-                if(ray.transform == null){
-                    ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
-                    
-                    if(ray.transform != null){
-                        rightDistanceToPlayer = ray.distance;
-                    }
+                
+                ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
+                Debug.DrawRay(ladderPos, (_playerTransform.position - ladderPos).normalized * 25f, Color.red);
+                if(ray.transform != null){
+                    leftDistanceToPlayer = ray.distance;
                 }
             }
         }
