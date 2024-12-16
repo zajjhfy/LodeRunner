@@ -132,6 +132,10 @@ public class Enemy : MonoBehaviour
             moveDirection = _enemyController.RaycastLaddersUp(transform);
             MoveToLadder(moveDirection);
         }
+        else if(_enemyController.GetPlayerIsDown(transform)){
+            moveDirection = _enemyController.RaycastLaddersDown(transform);
+            MoveToLadder(moveDirection);
+        }
         else{
             Move(playerXPos);
         }

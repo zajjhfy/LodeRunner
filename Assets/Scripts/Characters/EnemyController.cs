@@ -64,21 +64,58 @@ public class EnemyController : MonoBehaviour
     }
 
     public Vector3 RaycastLaddersDown(Transform enemyTransform){
+        float rightDistanceToPlayer = 0f;
+        float leftDistanceToPlayer = 0f;
+        float distance = Math.Abs(enemyTransform.position.x) + 12f;
 
-        var ray = Physics2D.Raycast(enemyTransform.position, Vector2.right, 12f, _ladderMask);
-        if(ray.transform.gameObject.CompareTag("Ladder")){
-            var ladderPos = ray.transform.gameObject.transform.position;
-            ray = Physics2D.Raycast(ladderPos, Vector2.down, 1f, _groundMask);
-            if(!ray) return Vector2.right;
+        var ray = Physics2D.Raycast(enemyTransform.position, Vector2.right, distance, _ladderMask);
+
+        if(ray.transform != null){
+            if(ray.transform.gameObject.CompareTag("Ladder")){
+
+                var ladderPos = ray.transform.gameObject.transform.position;
+                ray = Physics2D.Raycast(ladderPos, Vector3.down, 1f, _groundMask);
+
+                if(ray.transform == null){
+                    ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
+
+                    if(ray.transform != null){
+                        rightDistanceToPlayer = ray.distance;
+                    }
+                }
+            }
         }
 
-        ray = Physics2D.Raycast(enemyTransform.position, Vector2.left, 12f, _ladderMask);
-        if(ray.transform.gameObject.CompareTag("Ladder")){
-            var ladderPos = ray.transform.gameObject.transform.position;
-            ray = Physics2D.Raycast(ladderPos, Vector2.down, 1f, _groundMask);
-            if(!ray) return Vector2.left;
+        ray = Physics2D.Raycast(enemyTransform.position, Vector2.left, distance, _ladderMask);
+
+        if(ray.transform != null){
+            if(ray.transform.gameObject.CompareTag("Ladder")){
+                var ladderPos = ray.transform.gameObject.transform.position;
+                ray = Physics2D.Raycast(ladderPos, Vector3.down, 1f, _groundMask);
+
+                if(ray.transform == null){
+                    ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
+                    
+                    if(ray.transform != null){
+                        rightDistanceToPlayer = ray.distance;
+                    }
+                }
+            }
         }
         
+        if(leftDistanceToPlayer > rightDistanceToPlayer && rightDistanceToPlayer > 0f && leftDistanceToPlayer > 0f){
+            return Vector3.right;
+        }
+        else if(leftDistanceToPlayer < rightDistanceToPlayer && rightDistanceToPlayer > 0f && leftDistanceToPlayer > 0f){
+            return Vector3.left;
+        }
+        else if(leftDistanceToPlayer > 0f && rightDistanceToPlayer == 0f){
+            return Vector3.left;
+        }
+        else if(leftDistanceToPlayer == 0f && rightDistanceToPlayer > 0f){
+            return Vector3.right;
+        }
+
         return Vector3.zero;
     }
 
