@@ -2,10 +2,6 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ButtonPressedEventArgs : EventArgs{
-    public KeyCode key;
-}
-
 public class PlayerController: MonoBehaviour
 {
     private PlayerControllerIA _playerControllerIA;
