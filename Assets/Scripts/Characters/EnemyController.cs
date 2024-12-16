@@ -63,6 +63,7 @@ public class EnemyController : MonoBehaviour
         return Vector3.zero;
     }
 
+    // проверка лестниц в ground
     public Vector3 RaycastLaddersDown(Transform enemyTransform){
         float rightDistanceToPlayer = 0f;
         float leftDistanceToPlayer = 0f;
