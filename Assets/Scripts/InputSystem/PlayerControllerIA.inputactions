@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Exit",
+                    "type": "Button",
+                    "id": "e7c6421a-d1d8-4b65-b2e4-b817b4beea84",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -114,11 +123,50 @@
                 {
                     "name": "",
                     "id": "d3c426dd-8cd5-4b5f-8a09-1abd4b7ac968",
-                    "path": "<Keyboard>/escape",
+                    "path": "<Keyboard>/p",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e9d1bac7-8959-4129-a6d9-f7a22a24155a",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Exit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GameStart",
+            "id": "dd9e50dc-a014-4b19-9b33-5d9fedfe104c",
+            "actions": [
+                {
+                    "name": "Go",
+                    "type": "Button",
+                    "id": "1bce9722-ba91-48ca-a916-4e26ee9678a7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0e863464-0bdc-4b8f-bd41-fdaa69960aa5",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Go",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -53,6 +53,15 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Exit"",
+                    ""type"": ""Button"",
+                    ""id"": ""e7c6421a-d1d8-4b65-b2e4-b817b4beea84"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -136,11 +145,50 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""d3c426dd-8cd5-4b5f-8a09-1abd4b7ac968"",
-                    ""path"": ""<Keyboard>/escape"",
+                    ""path"": ""<Keyboard>/p"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e9d1bac7-8959-4129-a6d9-f7a22a24155a"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Exit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""GameStart"",
+            ""id"": ""dd9e50dc-a014-4b19-9b33-5d9fedfe104c"",
+            ""actions"": [
+                {
+                    ""name"": ""Go"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bce9722-ba91-48ca-a916-4e26ee9678a7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0e863464-0bdc-4b8f-bd41-fdaa69960aa5"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Go"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -154,11 +202,16 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
         m_Input_Movement = m_Input.FindAction("Movement", throwIfNotFound: true);
         m_Input_Break = m_Input.FindAction("Break", throwIfNotFound: true);
         m_Input_Pause = m_Input.FindAction("Pause", throwIfNotFound: true);
+        m_Input_Exit = m_Input.FindAction("Exit", throwIfNotFound: true);
+        // GameStart
+        m_GameStart = asset.FindActionMap("GameStart", throwIfNotFound: true);
+        m_GameStart_Go = m_GameStart.FindAction("Go", throwIfNotFound: true);
     }
 
     ~@PlayerControllerIA()
     {
         UnityEngine.Debug.Assert(!m_Input.enabled, "This will cause a leak and performance issues, PlayerControllerIA.Input.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_GameStart.enabled, "This will cause a leak and performance issues, PlayerControllerIA.GameStart.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -223,6 +276,7 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
     private readonly InputAction m_Input_Movement;
     private readonly InputAction m_Input_Break;
     private readonly InputAction m_Input_Pause;
+    private readonly InputAction m_Input_Exit;
     public struct InputActions
     {
         private @PlayerControllerIA m_Wrapper;
@@ -230,6 +284,7 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Input_Movement;
         public InputAction @Break => m_Wrapper.m_Input_Break;
         public InputAction @Pause => m_Wrapper.m_Input_Pause;
+        public InputAction @Exit => m_Wrapper.m_Input_Exit;
         public InputActionMap Get() { return m_Wrapper.m_Input; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -248,6 +303,9 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @Exit.started += instance.OnExit;
+            @Exit.performed += instance.OnExit;
+            @Exit.canceled += instance.OnExit;
         }
 
         private void UnregisterCallbacks(IInputActions instance)
@@ -261,6 +319,9 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @Exit.started -= instance.OnExit;
+            @Exit.performed -= instance.OnExit;
+            @Exit.canceled -= instance.OnExit;
         }
 
         public void RemoveCallbacks(IInputActions instance)
@@ -278,10 +339,61 @@ public partial class @PlayerControllerIA: IInputActionCollection2, IDisposable
         }
     }
     public InputActions @Input => new InputActions(this);
+
+    // GameStart
+    private readonly InputActionMap m_GameStart;
+    private List<IGameStartActions> m_GameStartActionsCallbackInterfaces = new List<IGameStartActions>();
+    private readonly InputAction m_GameStart_Go;
+    public struct GameStartActions
+    {
+        private @PlayerControllerIA m_Wrapper;
+        public GameStartActions(@PlayerControllerIA wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Go => m_Wrapper.m_GameStart_Go;
+        public InputActionMap Get() { return m_Wrapper.m_GameStart; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GameStartActions set) { return set.Get(); }
+        public void AddCallbacks(IGameStartActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GameStartActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GameStartActionsCallbackInterfaces.Add(instance);
+            @Go.started += instance.OnGo;
+            @Go.performed += instance.OnGo;
+            @Go.canceled += instance.OnGo;
+        }
+
+        private void UnregisterCallbacks(IGameStartActions instance)
+        {
+            @Go.started -= instance.OnGo;
+            @Go.performed -= instance.OnGo;
+            @Go.canceled -= instance.OnGo;
+        }
+
+        public void RemoveCallbacks(IGameStartActions instance)
+        {
+            if (m_Wrapper.m_GameStartActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IGameStartActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GameStartActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GameStartActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public GameStartActions @GameStart => new GameStartActions(this);
     public interface IInputActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnBreak(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnExit(InputAction.CallbackContext context);
+    }
+    public interface IGameStartActions
+    {
+        void OnGo(InputAction.CallbackContext context);
     }
 }
