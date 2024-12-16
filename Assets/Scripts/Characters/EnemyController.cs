@@ -28,10 +28,8 @@ public class EnemyController : MonoBehaviour
         if(ray.transform != null){
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
-                ray = Physics2D.Raycast(ladderPos, _playerTransform.position.normalized, 25f, _playerMask);
-                Debug.DrawRay(ladderPos, _playerTransform.position, Color.red);
+                ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
                 if(ray.transform != null){
-                    Debug.Log("1 = " + ray.distance);
                     rightDistanceToPlayer = ray.distance;
                 }
             }
@@ -42,10 +40,8 @@ public class EnemyController : MonoBehaviour
         if(ray.transform != null){
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
-                ray = Physics2D.Raycast(ladderPos, _playerTransform.position.normalized, 25f, _playerMask);
-                Debug.DrawRay(ladderPos, _playerTransform.position, Color.red);
+                ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
                 if(ray.transform != null){
-                    Debug.Log("2 = " + ray.distance);
                     leftDistanceToPlayer = ray.distance;
                 }
             }
@@ -56,6 +52,12 @@ public class EnemyController : MonoBehaviour
         }
         else if(leftDistanceToPlayer < rightDistanceToPlayer && rightDistanceToPlayer > 0f && leftDistanceToPlayer > 0f){
             return Vector3.left;
+        }
+        else if(leftDistanceToPlayer > 0f && rightDistanceToPlayer == 0f){
+            return Vector3.left;
+        }
+        else if(leftDistanceToPlayer == 0f && rightDistanceToPlayer > 0f){
+            return Vector3.right;
         }
 
         return Vector3.zero;
