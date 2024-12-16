@@ -3,14 +3,12 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private enum Direction {Left, Right}
-    private enum States {Run, Climb, Break, Fall, Swing}
+    private enum States {Run, Climb, Fall, Swing}
 
     [Header("Layers")]
     [SerializeField] private LayerMask[] _layerMasks;
 
     [Header("References")]
-    [SerializeField] private PlayerController _playerController;
     [SerializeField] private EnemyController _enemyController;
 
     private States _currentState = States.Run;
@@ -19,7 +17,6 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private Vector2 _ladderVector;
-    private Vector2 moveDirectionToPlayer;
     private float _moveSpeed = 2.5f;
     private string[] _animations;
     private bool inLadderCollider = false;
@@ -81,14 +78,13 @@ public class Enemy : MonoBehaviour
 
     private void Swing()
     {
-        var moveDirection = _playerController.GetMovementVector();
-        FlipSprite(moveDirection);
-        if(moveDirection == Vector3.right || moveDirection == Vector3.left){
+        float playerXPos = _enemyController.GetPlayerXPosition();
+        if(playerXPos > transform.position.x || playerXPos < transform.position.x && !_enemyController.GetPlayerIsDown(transform)){
             StrictAnimationSwitch(IS_IDLE_SWINGING);
             SwingAnimationSwitch(true);
-            RopeMove(moveDirection);
+            RopeMove(playerXPos);
         }
-        else if(moveDirection == Vector3.down){
+        else if(!CheckForGround() && _enemyController.GetPlayerIsDown(transform)){
             StrictAnimationSwitch(IS_FALLING);
             _rb.MovePosition(transform.position + Vector3.down * Time.fixedDeltaTime * _moveSpeed);
             ChangeState(States.Fall);
@@ -110,12 +106,13 @@ public class Enemy : MonoBehaviour
         if(moveDirection == Vector3.down || moveDirection == Vector3.up){
             StrictAnimationSwitch(IS_IDLE_CLIMBING);
             ClimbAnimationSwitch(true);
-            LadderMove(moveDirection);
+            LadderMove(moveDirection, out bool isBlocked);
             transform.position = new Vector2(_ladderVector.x, transform.position.y);
-        }
-        else if(moveDirection == Vector3.right || moveDirection == Vector3.left){
-            StrictAnimationSwitch(IS_RUNNING);
-            Move(moveDirection);
+            if(isBlocked){
+                Debug.Log("blocked");
+                StrictAnimationSwitch(IS_RUNNING);
+                ChangeState(States.Run);
+            }
         }
         else{
             StrictAnimationSwitch(IS_IDLE_CLIMBING);
@@ -125,18 +122,21 @@ public class Enemy : MonoBehaviour
     private void Run()
     {
         float playerXPos = _enemyController.GetPlayerXPosition();
-        float playerYPos = _enemyController.GetPlayerYPosition();
         Vector3 moveDirection;
-        // проверка на -y
+        StrictAnimationSwitch(IS_RUNNING);
+
         if(_enemyController.GetPlayerIsUp(transform)){
             moveDirection = _enemyController.RaycastLaddersUp(transform);
+            FlipSprite(moveDirection);
             MoveToLadder(moveDirection);
         }
         else if(_enemyController.GetPlayerIsDown(transform)){
             moveDirection = _enemyController.RaycastLaddersDown(transform);
+            FlipSprite(moveDirection);
             MoveToLadder(moveDirection);
             var ray = CheckForLadder();
-            if(ray){
+            if(ray && !inLadderCollider){
+                Debug.Log("ladder: true");
                 _ladderVector = new Vector2(ray.transform.position.x, transform.position.y);
                 inLadderCollider = true;
                 ChangeState(States.Climb);
@@ -149,12 +149,14 @@ public class Enemy : MonoBehaviour
 
     private void Move(float xPos){
         Vector3 moveDirection;
-        if(xPos < transform.position.x){
+        if(xPos < transform.position.x && !CheckForLeftObstacle()){
             moveDirection = Vector3.left;
+            FlipSprite(moveDirection);
             _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
         }
-        else if(xPos > transform.position.x){
+        else if(xPos > transform.position.x && !CheckForRightObstacle()){
             moveDirection = Vector3.right;
+            FlipSprite(moveDirection);
             _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
         }
     }
@@ -163,19 +165,23 @@ public class Enemy : MonoBehaviour
         _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
     }
 
-    private void Move(Vector3 moveDirection){
-        bool isBlocked = moveDirection == Vector3.right ? CheckForRightObstacle() : CheckForLeftObstacle();
-        if(!isBlocked){
+    private void RopeMove(float xPos){
+        Vector3 moveDirection;
+        if(xPos < transform.position.x){
+            moveDirection = Vector3.left;
+            FlipSprite(moveDirection);
+            _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
+        }
+        else if(xPos > transform.position.x){
+            moveDirection = Vector3.right;
+            FlipSprite(moveDirection);
             _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
         }
     }
 
-    private void RopeMove(Vector3 moveDirection){
-        _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
-    }
-
-    private void LadderMove(Vector3 moveDirection){
-        bool isBlocked = moveDirection == Vector3.down ? CheckForGroundOnly() : false;
+    private void LadderMove(Vector3 moveDirection, out bool isBlocked){
+        isBlocked = true;
+        isBlocked = moveDirection == Vector3.down ? CheckForGroundOnly() : false;
         if(!isBlocked){
             _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
         }
@@ -220,7 +226,7 @@ public class Enemy : MonoBehaviour
     }
 
     private RaycastHit2D CheckForLadder(){
-        return Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.05f, _layerMasks[0]);
+        return Physics2D.BoxCast(_collider.bounds.center, _collider.size, 0f, Vector2.down, 0.3f, _layerMasks[0]);
     }
 
     private bool CheckForGroundOnly(){
@@ -261,9 +267,13 @@ public class Enemy : MonoBehaviour
                 case "Ladder":
                     inLadderCollider = true;
                     _ladderVector = new Vector2(collider.gameObject.transform.position.x, transform.position.y);
-                    bool playerIsUp = _enemyController.GetPlayerIsUp(transform);
-                    bool playerIsDown = _enemyController.GetPlayerIsDown(transform);
-                    if(playerIsUp || playerIsDown){
+                    bool playerIsUp = transform.position.y < _enemyController.GetPlayerYPosition();
+                    if(playerIsUp){
+                        ChangeState(States.Climb);
+                        break;
+                    }
+                    bool playerIsDown = transform.position.y > _enemyController.GetPlayerYPosition();
+                    if(playerIsDown){
                         ChangeState(States.Climb);
                         break;
                     }
@@ -282,3 +292,4 @@ public class Enemy : MonoBehaviour
         inLadderCollider = false;
     }
 }
+

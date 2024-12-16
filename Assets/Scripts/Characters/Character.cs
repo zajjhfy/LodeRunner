@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    private enum Direction {Left, Right}
     private enum States {Run, Climb, Break, Fall, Swing}
 
     [Header("Layers")]
@@ -295,7 +294,7 @@ public class Character : MonoBehaviour
             switch(collider.gameObject.tag){
                 case "Rope":
                     float colliderYpos = collider.gameObject.transform.position.y;
-                    if((transform.position.y-0.05f) *-1 < colliderYpos * -1){
+                    if((transform.position.y-0.07f) *-1 < colliderYpos * -1){
                         ChangeState(States.Fall);
                         break;
                     } 

@@ -9,10 +9,10 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private LayerMask _playerMask;
 
     public Vector3 GetMoveDirectionY(Transform enemyTransform){
-        if(GetPlayerIsDown(enemyTransform)){
+        if(GetPlayerIsDownTest(enemyTransform)){
             return Vector3.down;
         }
-        else if(GetPlayerIsUp(enemyTransform)){
+        else if(GetPlayerIsUpTest(enemyTransform)){
             return Vector3.up;
         }
         return Vector3.zero;
@@ -120,6 +120,14 @@ public class EnemyController : MonoBehaviour
 
     public bool GetPlayerIsUp(Transform enemyTransform){
         return _playerTransform.position.y > enemyTransform.position.y+1f;
+    }
+
+    public bool GetPlayerIsUpTest(Transform enemyTransform){
+        return _playerTransform.position.y > enemyTransform.position.y;
+    }
+
+    public bool GetPlayerIsDownTest(Transform enemyTransform){
+        return _playerTransform.position.y < enemyTransform.position.y;
     }
 
     public float GetPlayerXPosition() => _playerTransform.position.x;
