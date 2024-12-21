@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _gameSceneEnter;
+    [SerializeField] private GameObject _loseText;
+    [SerializeField] private GameObject _winText;
     [SerializeField] private ScoreField _scoreField;
 
     [Header("SpawnSystem")]
@@ -38,11 +40,15 @@ public class GameManager : MonoBehaviour
 
     private void FinishGame(object sender, EventArgs e)
     {
-        Debug.Log("You win!");
+        _winText.SetActive(true);
+        Time.timeScale = 0;
+        StartCoroutine(ExitToMainMenuWait());
     }
 
     private void LoseGame(object sender, EventArgs e){
-        Debug.Log("You lose!");
+        _loseText.SetActive(true);
+        Time.timeScale = 0;
+        StartCoroutine(ExitToMainMenuWait());
     }
 
     private void _controller_OnGameStartPressed(object sender, EventArgs e)
@@ -56,9 +62,7 @@ public class GameManager : MonoBehaviour
 
     private void _controller_OnExitButtonPressed(object sender, EventArgs e)
     {
-        _controller.DisableInputMap();
-        DisablePauseMenu();
-        SceneManager.LoadScene(0);
+        ExitToMainMenu();
     }
 
     private void _controller_OnPauseButtonPressed(object sender, EventArgs e)
@@ -86,11 +90,23 @@ public class GameManager : MonoBehaviour
         _controller.OnExitButtonPressed -= _controller_OnExitButtonPressed;
     }
 
+    private void ExitToMainMenu(){
+        _controller.DisableInputMap();
+        DisablePauseMenu();
+        SceneManager.LoadScene(0);
+    }
+
     public void ProcessEnemyDeath(int id) => StartCoroutine((WaitForEnemySpawn(id)));
 
     private IEnumerator WaitForEnemySpawn(int id){
         yield return new WaitForSeconds(7f);
         var enemy = Instantiate(_enemyPrefab, _enemySpawnIds[id].transform.position, Quaternion.identity);
         enemy.GetComponent<Enemy>().Id = id;
+    }
+
+    private IEnumerator ExitToMainMenuWait(){
+        yield return new WaitForSecondsRealtime(5f);
+        Time.timeScale = 1;
+        ExitToMainMenu();
     }
 }
