@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
     private void _controller_OnExitButtonPressed(object sender, EventArgs e)
     {
         _controller.DisableInputMap();
+        DisablePauseMenu();
         SceneManager.LoadScene(0);
     }
 
@@ -45,6 +46,13 @@ public class GameManager : MonoBehaviour
         else{
             _pauseMenu.SetActive(true); 
             Time.timeScale = 0;
+        }
+    }
+
+    private void DisablePauseMenu(){
+        if(_pauseMenu.activeSelf){
+            _pauseMenu.SetActive(false);
+            Time.timeScale = 1;
         }
     }
 
