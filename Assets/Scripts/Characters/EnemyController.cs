@@ -1,12 +1,19 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    public static EnemyController Instance => _instance;
+    private static EnemyController _instance;
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private LayerMask _ladderMask;
     [SerializeField] private LayerMask _playerMask;
+
+    private void Awake(){
+        if(_instance == null) _instance = this;
+    }
 
     public Vector3 GetMoveDirectionY(Transform enemyTransform){
         if(GetPlayerIsDownTest(enemyTransform)){
@@ -24,7 +31,7 @@ public class EnemyController : MonoBehaviour
         float distance = Math.Abs(enemyTransform.position.x) + 12f;
 
         var ray = Physics2D.Raycast(enemyTransform.position, Vector2.right, distance, _ladderMask);
-
+        
         if(ray.transform != null){
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
@@ -116,12 +123,13 @@ public class EnemyController : MonoBehaviour
 
     public bool RaycastCheckPlayerOnSameHeight(Transform enemyTransform){
         float distance = Math.Abs(enemyTransform.position.x) + 12f;
+
         var ray = Physics2D.Raycast(enemyTransform.position, Vector3.left, distance, _playerMask);
 
         if(ray) return true;
 
         ray = Physics2D.Raycast(enemyTransform.position, Vector3.right, distance, _playerMask);
-        
+
         if(ray) return true;
 
         return false;

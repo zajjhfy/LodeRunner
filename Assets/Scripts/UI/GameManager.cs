@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private PlayerController _controller;
     [SerializeField] private GameObject _gameSceneEnter;
+    [SerializeField] private ScoreField _scoreField;
 
     private void Awake(){
         Time.timeScale = 0;
@@ -19,6 +20,12 @@ public class GameManager : MonoBehaviour
         _controller.OnGameStartPressed += _controller_OnGameStartPressed;
         _controller.OnPauseButtonPressed += _controller_OnPauseButtonPressed;
         _controller.OnExitButtonPressed += _controller_OnExitButtonPressed;
+        _scoreField.OnGameFinish += FinishGame;
+    }
+
+    private void FinishGame(object sender, EventArgs e)
+    {
+        Debug.Log("You win!");
     }
 
     private void _controller_OnGameStartPressed(object sender, EventArgs e)
@@ -57,6 +64,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnDisable(){
+        _scoreField.OnGameFinish -= FinishGame;
         _controller.OnPauseButtonPressed -= _controller_OnPauseButtonPressed;
         _controller.OnExitButtonPressed -= _controller_OnExitButtonPressed;
     }

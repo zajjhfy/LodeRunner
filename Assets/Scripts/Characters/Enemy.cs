@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private LayerMask[] _layerMasks;
 
     [Header("References")]
-    [SerializeField] private EnemyController _enemyController;
+    private EnemyController _enemyController;
 
     private States _currentState = States.Run;
     private Animator _animator;
@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        _enemyController = EnemyController.Instance;
         GetAnimations();
     }
 
@@ -101,19 +102,21 @@ public class Enemy : MonoBehaviour
 
     private void Climb()
     {
-        Debug.DrawRay(_collider.bounds.center, Vector2.down * 0.05f, Color.red);
         var moveDirection = _enemyController.GetMoveDirectionY(transform);
         FlipSprite(moveDirection);
         if(moveDirection == Vector3.down || moveDirection == Vector3.up){
             StrictAnimationSwitch(IS_IDLE_CLIMBING);
             ClimbAnimationSwitch(true);
             LadderMove(moveDirection, out bool isBlocked);
-            transform.position = new Vector2(_ladderVector.x, transform.position.y);
             if(isBlocked){
-                Debug.Log("blocked");
                 StrictAnimationSwitch(IS_RUNNING);
-                ChangeState(States.Run);
+                Move(_enemyController.GetPlayerXPosition());
             }
+        }
+        else if(_enemyController.RaycastCheckPlayerOnSameHeight(transform)){
+            Debug.Log("cant move");
+            StrictAnimationSwitch(IS_RUNNING);
+            Move(_enemyController.GetPlayerXPosition());
         }
         else{
             StrictAnimationSwitch(IS_IDLE_CLIMBING);
@@ -137,8 +140,8 @@ public class Enemy : MonoBehaviour
             MoveToLadder(moveDirection);
             var ray = CheckForLadder();
             if(ray && !inLadderCollider){
-                Debug.Log("ladder: true");
                 _ladderVector = new Vector2(ray.transform.position.x, transform.position.y);
+                SetXRelatedToLadder();
                 inLadderCollider = true;
                 ChangeState(States.Climb);
             }
@@ -161,6 +164,8 @@ public class Enemy : MonoBehaviour
             _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
         }
     }
+
+    private void SetXRelatedToLadder() => transform.position = new Vector2(_ladderVector.x, transform.position.y);
 
     private void MoveToLadder(Vector3 moveDirection){
         _rb.MovePosition(transform.position + moveDirection * Time.fixedDeltaTime * _moveSpeed);
@@ -270,11 +275,13 @@ public class Enemy : MonoBehaviour
                     _ladderVector = new Vector2(collider.gameObject.transform.position.x, transform.position.y);
                     bool playerIsUp = transform.position.y < _enemyController.GetPlayerYPosition();
                     if(playerIsUp){
+                        SetXRelatedToLadder();
                         ChangeState(States.Climb);
                         break;
                     }
                     bool playerIsDown = transform.position.y > _enemyController.GetPlayerYPosition();
                     if(playerIsDown){
+                        SetXRelatedToLadder();
                         ChangeState(States.Climb);
                         break;
                     }
