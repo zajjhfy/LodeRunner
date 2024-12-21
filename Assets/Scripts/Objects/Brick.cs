@@ -8,7 +8,6 @@ public class Brick : MonoBehaviour
     [SerializeField] private Sprite[] _particleSprites;
     [SerializeField] private Transform _particlesTransform;
     private SpriteRenderer _particlesSpriteRenderer;
-
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _collider;
     private bool _coroutineworking = false;
@@ -28,14 +27,18 @@ public class Brick : MonoBehaviour
         _coroutineworking = true;
     }
 
-    private void ChangeColliderSize(){
+    private void ChangeCollider(){
         _collider.offset = new Vector2(0f, -0.5f);
-        _collider.size = new Vector2(1f, 0.005f);
+        _collider.size = new Vector2(1f, 0.2f);
+        gameObject.layer = 0;
+        _collider.isTrigger = true;
     }
 
-    private void ReturnColliderSize(){
+    private void ReturnCollider(){
         _collider.offset = new Vector2(0f, 0f);
         _collider.size = new Vector2(1f, 1f);
+        gameObject.layer = 6;
+        _collider.isTrigger = false;
     }
 
     private IEnumerator BreakBlockCoroutine(){
@@ -51,7 +54,8 @@ public class Brick : MonoBehaviour
             }
             i++;
         }
-        ChangeColliderSize();
+        _spriteRenderer.sprite = null;
+        ChangeCollider();
         StartCoroutine(RecoverBlockCoroutine());
     }
 
@@ -63,7 +67,15 @@ public class Brick : MonoBehaviour
             _spriteRenderer.sprite = _recoverySprites[i];
             i++;
         }
-        ReturnColliderSize();
+        ReturnCollider();
         _coroutineworking = false;
+    }
+
+    private void OnTriggerStay2D(Collider2D collider){
+        if(collider.gameObject.CompareTag("Enemy")){
+            Sprite sprite = collider.gameObject.GetComponent<SpriteRenderer>().sprite;
+            _spriteRenderer.sprite = sprite;
+            ReturnCollider();
+        }
     }
 }

@@ -288,6 +288,9 @@ public class Enemy : MonoBehaviour
                         break;
                     }
                     break;
+                case "Ground":
+                    Die();
+                    break;
             }
         }
     }

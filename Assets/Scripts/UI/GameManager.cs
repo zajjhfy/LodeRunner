@@ -96,10 +96,13 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void ProcessEnemyDeath(int id) => StartCoroutine((WaitForEnemySpawn(id)));
+    public void ProcessEnemyDeath(int id){
+        _scoreField.UpdateScore();
+        StartCoroutine((WaitForEnemySpawn(id)));
+    }
 
     private IEnumerator WaitForEnemySpawn(int id){
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(10f);
         var enemy = Instantiate(_enemyPrefab, _enemySpawnIds[id].transform.position, Quaternion.identity);
         enemy.GetComponent<Enemy>().Id = id;
     }

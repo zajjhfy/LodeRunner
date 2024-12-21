@@ -20,7 +20,7 @@ public class ScoreField : MonoBehaviour
     public void UpdateScore(){
         _scorePoints += 100;
         _scoreText.text = $"SCORE {_scorePoints:d4}";
-        if(_scorePoints >= 600){
+        if(_scorePoints >= 1000){
             OnGameFinish?.Invoke(this, EventArgs.Empty);
         }
     }

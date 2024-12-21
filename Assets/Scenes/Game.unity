@@ -1400,6 +1400,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2551999139473358436, guid: 4631a3dffbe3aa14a82826dd5a08b3da, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2866230467369965816, guid: 4631a3dffbe3aa14a82826dd5a08b3da, type: 3}
       propertyPath: Id
       value: 1
@@ -11537,6 +11541,10 @@ PrefabInstance:
     - target: {fileID: 2551999139473358436, guid: 4631a3dffbe3aa14a82826dd5a08b3da, type: 3}
       propertyPath: m_Name
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 2551999139473358436, guid: 4631a3dffbe3aa14a82826dd5a08b3da, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2866230467369965816, guid: 4631a3dffbe3aa14a82826dd5a08b3da, type: 3}
       propertyPath: _enemyController
