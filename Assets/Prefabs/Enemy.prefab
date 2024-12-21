@@ -194,4 +194,4 @@ MonoBehaviour:
     m_Bits: 8
   - serializedVersion: 2
     m_Bits: 64
-  _enemyController: {fileID: 0}
+  Id: 0

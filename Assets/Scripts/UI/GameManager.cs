@@ -6,12 +6,18 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("UI")]
     [SerializeField] private GameObject _pauseMenu;
-    [SerializeField] private PlayerController _controller;
     [SerializeField] private GameObject _gameSceneEnter;
     [SerializeField] private ScoreField _scoreField;
+
+    [Header("SpawnSystem")]
     [SerializeField] private GameObject[] _enemySpawnIds;
     [SerializeField] private GameObject _enemyPrefab;
+
+    [Header("References")]
+    [SerializeField] private PlayerController _controller;
+    [SerializeField] private PlayerTrigger _playerTrigger;
 
     public static GameManager Instance { get; private set; }
 
@@ -23,6 +29,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnEnable(){
+        _playerTrigger.OnGameLose += LoseGame;
         _controller.OnGameStartPressed += _controller_OnGameStartPressed;
         _controller.OnPauseButtonPressed += _controller_OnPauseButtonPressed;
         _controller.OnExitButtonPressed += _controller_OnExitButtonPressed;
@@ -32,6 +39,10 @@ public class GameManager : MonoBehaviour
     private void FinishGame(object sender, EventArgs e)
     {
         Debug.Log("You win!");
+    }
+
+    private void LoseGame(object sender, EventArgs e){
+        Debug.Log("You lose!");
     }
 
     private void _controller_OnGameStartPressed(object sender, EventArgs e)
