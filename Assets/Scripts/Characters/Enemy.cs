@@ -101,6 +101,7 @@ public class Enemy : MonoBehaviour
 
     private void Climb()
     {
+        Debug.DrawRay(_collider.bounds.center, Vector2.down * 0.05f, Color.red);
         var moveDirection = _enemyController.GetMoveDirectionY(transform);
         FlipSprite(moveDirection);
         if(moveDirection == Vector3.down || moveDirection == Vector3.up){
@@ -142,7 +143,7 @@ public class Enemy : MonoBehaviour
                 ChangeState(States.Climb);
             }
         }
-        else{
+        else if(_enemyController.RaycastCheckPlayerOnSameHeight(transform)){
             Move(playerXPos);
         }
     }

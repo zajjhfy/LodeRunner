@@ -114,6 +114,19 @@ public class EnemyController : MonoBehaviour
         return Vector3.zero;
     }
 
+    public bool RaycastCheckPlayerOnSameHeight(Transform enemyTransform){
+        float distance = Math.Abs(enemyTransform.position.x) + 12f;
+        var ray = Physics2D.Raycast(enemyTransform.position, Vector3.left, distance, _playerMask);
+
+        if(ray) return true;
+
+        ray = Physics2D.Raycast(enemyTransform.position, Vector3.right, distance, _playerMask);
+        
+        if(ray) return true;
+
+        return false;
+    }
+
     public bool GetPlayerIsDown(Transform enemyTransform){
         return _playerTransform.position.y < enemyTransform.position.y-1f;
     }
