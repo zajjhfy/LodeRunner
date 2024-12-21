@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [Header("SpawnSystem")]
     [SerializeField] private GameObject[] _enemySpawnIds;
     [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private Sprite _spawnSprite;
 
     [Header("References")]
     [SerializeField] private PlayerController _controller;
@@ -102,7 +103,13 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator WaitForEnemySpawn(int id){
+        var spawnSprite = _enemySpawnIds[id].GetComponent<SpriteRenderer>();
+
+        yield return new WaitForSeconds(5f);
+        spawnSprite.sprite = _spawnSprite;
+
         yield return new WaitForSeconds(10f);
+        spawnSprite.sprite = null;
         var enemy = Instantiate(_enemyPrefab, _enemySpawnIds[id].transform.position, Quaternion.identity);
         enemy.GetComponent<Enemy>().Id = id;
     }
