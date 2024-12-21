@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,8 +10,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerController _controller;
     [SerializeField] private GameObject _gameSceneEnter;
     [SerializeField] private ScoreField _scoreField;
+    [SerializeField] private GameObject[] _enemySpawnIds;
+    [SerializeField] private GameObject _enemyPrefab;
+
+    public static GameManager Instance { get; private set; }
 
     private void Awake(){
+        if(Instance == null) Instance = this;
         Time.timeScale = 0;
         _pauseMenu.SetActive(false);
         _gameSceneEnter.SetActive(true);
@@ -67,5 +73,13 @@ public class GameManager : MonoBehaviour
         _scoreField.OnGameFinish -= FinishGame;
         _controller.OnPauseButtonPressed -= _controller_OnPauseButtonPressed;
         _controller.OnExitButtonPressed -= _controller_OnExitButtonPressed;
+    }
+
+    public void ProcessEnemyDeath(int id) => StartCoroutine((WaitForEnemySpawn(id)));
+
+    private IEnumerator WaitForEnemySpawn(int id){
+        yield return new WaitForSeconds(7f);
+        var enemy = Instantiate(_enemyPrefab, _enemySpawnIds[id].transform.position, Quaternion.identity);
+        enemy.GetComponent<Enemy>().Id = id;
     }
 }

@@ -1,16 +1,17 @@
-using System.Linq;
+using System;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     private enum States {Run, Climb, Fall, Swing}
-
+    
     [Header("Layers")]
     [SerializeField] private LayerMask[] _layerMasks;
 
-    [Header("References")]
-    private EnemyController _enemyController;
+    public int Id;
 
+    private GameManager _gameManager;
+    private EnemyController _enemyController;
     private States _currentState = States.Run;
     private Animator _animator;
     private CapsuleCollider2D _collider;
@@ -37,6 +38,7 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        _gameManager = GameManager.Instance;
         _enemyController = EnemyController.Instance;
         GetAnimations();
     }
@@ -47,6 +49,7 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {   
+        Die();
         CheckState();
     }
 
@@ -264,7 +267,7 @@ public class Enemy : MonoBehaviour
             switch(collider.gameObject.tag){
                 case "Rope":
                     float colliderYpos = collider.gameObject.transform.position.y;
-                    if((transform.position.y-0.05f) *-1 < colliderYpos * -1){
+                    if((transform.position.y-0.07f) *-1 < colliderYpos * -1){
                         ChangeState(States.Fall);
                         break;
                     } 
@@ -298,6 +301,11 @@ public class Enemy : MonoBehaviour
             ChangeState(States.Run);
         }
         inLadderCollider = false;
+    }
+
+    private void Die(){
+        _gameManager.ProcessEnemyDeath(Id);
+        Destroy(gameObject);
     }
 }
 

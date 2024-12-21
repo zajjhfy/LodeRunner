@@ -1465,6 +1465,11 @@ MonoBehaviour:
   _controller: {fileID: 1677456578}
   _gameSceneEnter: {fileID: 1245706506}
   _scoreField: {fileID: 929926039}
+  _enemySpawnIds:
+  - {fileID: 176362725}
+  - {fileID: 794267116}
+  - {fileID: 1719400441}
+  _enemyPrefab: {fileID: 2551999139473358436, guid: 4631a3dffbe3aa14a82826dd5a08b3da, type: 3}
 --- !u!4 &218538065
 Transform:
   m_ObjectHideFlags: 0
