@@ -22,12 +22,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerController _controller;
     [SerializeField] private PlayerTrigger _playerTrigger;
 
-    [Header("Buttons")]
-    [SerializeField] private ExitToMainButton _exitToMainButton;
-    [SerializeField] private ExitToMainButton _exitToMainButton2;
-    [SerializeField] private NextLevelButton _nextLevelButton;
-    [SerializeField] private RetryButton _retryButton;
-
     public static GameManager Instance { get; private set; }
 
     private void Awake(){
@@ -37,14 +31,7 @@ public class GameManager : MonoBehaviour
         _gameSceneEnter.SetActive(true);
     }
 
-    private void Start(){
-        _exitToMainButton.OnClick += ExitToMainMenuGame;
-        _retryButton.OnClick += RetryGame;
-        _nextLevelButton.OnClick += NextLevelGame;
-        _exitToMainButton2.OnClick += ExitToMainMenuGame;
-    }
-
-    private void NextLevelGame()
+    public void NextLevelGame()
     {
         _winGameObj.SetActive(false);
         _loseGameObj.SetActive(false);
@@ -57,14 +44,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RetryGame()
+    public void RetryGame()
     {
         _winGameObj.SetActive(false);
         _loseGameObj.SetActive(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private void ExitToMainMenuGame()
+    public void ExitToMainMenuGame()
     {
         _winGameObj.SetActive(false);
         _loseGameObj.SetActive(false);
@@ -127,10 +114,6 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnDisable(){
-        _exitToMainButton.OnClick -= ExitToMainMenuGame;
-        _retryButton.OnClick -= RetryGame;
-        _nextLevelButton.OnClick -= NextLevelGame;
-        _exitToMainButton2.OnClick -= ExitToMainMenuGame;
         _scoreField.OnGameFinish -= FinishGame;
         _controller.OnPauseButtonPressed -= _controller_OnPauseButtonPressed;
         _controller.OnExitButtonPressed -= _controller_OnExitButtonPressed;

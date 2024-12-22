@@ -50,8 +50,11 @@ public class PlayButton : MonoBehaviour
             _onLevelSelection = true;
             OnLevelSelection?.Invoke();
         }
-        else if(_levelIndex != -1){
+        else if(_levelIndex != -1 && _onLevelSelection){
             SceneManager.LoadScene(_levelIndex);
+        }
+        else{
+            _levelIndex = -1;
         }
     }
 
