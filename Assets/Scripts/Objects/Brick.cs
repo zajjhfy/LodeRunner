@@ -21,6 +21,7 @@ public class Brick : MonoBehaviour
     public void Break(out bool toggled){
         toggled = false;
         if(!_coroutineworking){
+            SoundManager.PlaySound(SoundType.Break);
             StartCoroutine(BreakBlockCoroutine());
             toggled = true;
         }
@@ -73,6 +74,7 @@ public class Brick : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collider){
         if(collider.gameObject.CompareTag("Enemy")){
+            SoundManager.PlaySound(SoundType.Trapped);
             Sprite sprite = collider.gameObject.GetComponent<SpriteRenderer>().sprite;
             _spriteRenderer.sprite = sprite;
             ReturnCollider();

@@ -41,12 +41,14 @@ public class GameManager : MonoBehaviour
 
     private void FinishGame(object sender, EventArgs e)
     {
+        SoundManager.PlaySound(SoundType.Win);
         _winText.SetActive(true);
         Time.timeScale = 0;
         StartCoroutine(ExitToMainMenuWait());
     }
 
     private void LoseGame(object sender, EventArgs e){
+        SoundManager.PlaySound(SoundType.Lose);
         _loseText.SetActive(true);
         Time.timeScale = 0;
         StartCoroutine(ExitToMainMenuWait());

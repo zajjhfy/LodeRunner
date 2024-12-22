@@ -118,6 +118,7 @@ public class Character : MonoBehaviour
             case States.Fall:
                 if(CheckForGround()){
                     StrictAnimationSwitch();
+                    SoundManager.PlaySound(SoundType.Land);
                     ChangeState(States.Run);
                     break;
                 }
