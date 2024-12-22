@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     private void FinishGame(object sender, EventArgs e)
     {
-        SoundManager.PlaySound(SoundType.Win);
+        SoundManager.PlaySound(SoundType.Win, 0.5f);
         _winText.SetActive(true);
         Time.timeScale = 0;
         StartCoroutine(ExitToMainMenuWait());

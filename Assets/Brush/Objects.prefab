@@ -255,6 +255,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8932670875314241407}
     m_Modifications:
+    - target: {fileID: 1351054633060763951, guid: 0008c1bf232672c4c86ebb38d204d9ef, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1351054633060763951, guid: 0008c1bf232672c4c86ebb38d204d9ef, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4193267564714616792, guid: 0008c1bf232672c4c86ebb38d204d9ef, type: 3}
       propertyPath: m_Name
       value: Candy
@@ -539,7 +547,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4991858668195984754, guid: 8bedff179b922434a81fb0b86ade5fbc, type: 3}
   m_PrefabInstance: {fileID: 7918234398103902488}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5764348046166991356
+--- !u!114 &146803258779463417
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -6,6 +6,7 @@ public class ScoreField : MonoBehaviour
 {
     public static ScoreField Instance {get;private set;}
     public event EventHandler OnGameFinish;
+    public int finalScore;
     private Text _scoreText;
     private int _scorePoints = 0;
 
@@ -20,7 +21,7 @@ public class ScoreField : MonoBehaviour
     public void UpdateScore(){
         _scorePoints += 100;
         _scoreText.text = $"SCORE {_scorePoints:d4}";
-        if(_scorePoints >= 1000){
+        if(_scorePoints >= finalScore){
             OnGameFinish?.Invoke(this, EventArgs.Empty);
         }
     }
