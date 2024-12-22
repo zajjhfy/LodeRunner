@@ -36,7 +36,7 @@ public class ExitButton : MonoBehaviour
         }
         else{
             _exitText.transform.GetComponent<Text>().text = "EXIT";
-            _onLevelSelection = true;
+            _onLevelSelection = false;
             OnLevelSelectionExit?.Invoke();
         }
     }

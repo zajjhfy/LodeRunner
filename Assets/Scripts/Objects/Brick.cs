@@ -29,7 +29,7 @@ public class Brick : MonoBehaviour
     }
 
     private void ChangeCollider(){
-        _collider.offset = new Vector2(0f, -0.5f);
+        _collider.offset = new Vector2(0f, -0.2f);
         _collider.size = new Vector2(1f, 0.2f);
         gameObject.layer = 0;
         _collider.isTrigger = true;
@@ -61,7 +61,7 @@ public class Brick : MonoBehaviour
     }
 
     private IEnumerator RecoverBlockCoroutine(){
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(6f);
         int i = 0;
         while(i < 6){
             yield return new WaitForSeconds(.1f);
