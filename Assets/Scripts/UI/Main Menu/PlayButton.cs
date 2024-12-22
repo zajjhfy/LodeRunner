@@ -28,6 +28,7 @@ public class PlayButton : MonoBehaviour
         _buttonsTransform.transform.localPosition = new Vector3(0f, 0f, 0f);
         _levelsCanvas.SetActive(false);
         _onLevelSelection = false;
+        _levelIndex = -1;
     }
 
     private void OnMouseEnter(){
@@ -52,9 +53,6 @@ public class PlayButton : MonoBehaviour
         }
         else if(_levelIndex != -1 && _onLevelSelection){
             SceneManager.LoadScene(_levelIndex);
-        }
-        else{
-            _levelIndex = -1;
         }
     }
 

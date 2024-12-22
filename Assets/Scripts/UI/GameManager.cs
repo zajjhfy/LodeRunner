@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
         _winGameObj.SetActive(false);
         _loseGameObj.SetActive(false);
         int index = SceneManager.GetActiveScene().buildIndex + 1;
-        if(index == 3){
+        if(index > 3){
             ExitToMainMenu();
         }
         else{
@@ -119,9 +119,7 @@ public class GameManager : MonoBehaviour
         _controller.OnExitButtonPressed -= _controller_OnExitButtonPressed;
     }
 
-
-
-    public void ExitToMainMenu(){
+    private void ExitToMainMenu(){
         _controller.DisableInputMap();
         DisablePauseMenu();
         Time.timeScale = 1;
