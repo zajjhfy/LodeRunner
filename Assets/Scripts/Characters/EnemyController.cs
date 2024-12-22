@@ -29,6 +29,7 @@ public class EnemyController : MonoBehaviour
         float rightDistanceToPlayer = 0f;
         float leftDistanceToPlayer = 0f;
         float distance = Math.Abs(enemyTransform.position.x) + 12f;
+        
 
         var ray = Physics2D.Raycast(enemyTransform.position, Vector2.right, distance, _ladderMask);
         

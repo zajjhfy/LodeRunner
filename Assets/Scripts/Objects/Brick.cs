@@ -61,7 +61,7 @@ public class Brick : MonoBehaviour
     }
 
     private IEnumerator RecoverBlockCoroutine(){
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(10f);
         int i = 0;
         while(i < 6){
             yield return new WaitForSeconds(.1f);

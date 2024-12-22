@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
 
     private GameManager _gameManager;
     private EnemyController _enemyController;
-    private States _currentState = States.Fall;
+    private States _currentState = States.Run;
     private Animator _animator;
     private CapsuleCollider2D _collider;
     private Rigidbody2D _rb;
@@ -85,7 +85,7 @@ public class Enemy : MonoBehaviour
             SwingAnimationSwitch(true);
             RopeMove(playerXPos);
         }
-        else if(!CheckForGroundOnly() && _enemyController.GetPlayerIsDown(transform)){
+        else if(!CheckForGround() && _enemyController.GetPlayerIsDown(transform)){
             StrictAnimationSwitch(IS_FALLING);
             _rb.MovePosition(transform.position + Vector3.down * Time.fixedDeltaTime * _moveSpeed);
             ChangeState(States.Fall);
@@ -111,14 +111,6 @@ public class Enemy : MonoBehaviour
             if(isBlocked){
                 StrictAnimationSwitch(IS_RUNNING);
                 Move(_enemyController.GetPlayerXPosition());
-            }
-            else if(!isBlocked && inLadderCollider && _enemyController.RaycastCheckPlayerOnSameHeight(transform)
-            && _enemyController.GetPlayerState() == States.Run){
-                StrictAnimationSwitch(IS_RUNNING);
-                float playerY = _enemyController.GetPlayerYPosition();
-                transform.position = new Vector2(transform.position.x, playerY);
-                Move(_enemyController.GetPlayerXPosition());
-                ChangeState(States.Run);
             }
         }
         else if(_enemyController.RaycastCheckPlayerOnSameHeight(transform) && _enemyController.GetPlayerState() == States.Run){
