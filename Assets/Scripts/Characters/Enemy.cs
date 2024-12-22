@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,7 +13,7 @@ public class Enemy : MonoBehaviour
 
     private GameManager _gameManager;
     private EnemyController _enemyController;
-    private States _currentState = States.Run;
+    private States _currentState = States.Fall;
     private Animator _animator;
     private CapsuleCollider2D _collider;
     private Rigidbody2D _rb;
@@ -38,6 +39,7 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(EnemyInfo());
         _gameManager = GameManager.Instance;
         _enemyController = EnemyController.Instance;
         GetAnimations();
@@ -82,15 +84,24 @@ public class Enemy : MonoBehaviour
     private void Swing()
     {
         float playerXPos = _enemyController.GetPlayerXPosition();
-        if(playerXPos > transform.position.x || playerXPos < transform.position.x && !_enemyController.GetPlayerIsDown(transform)){
+        if(playerXPos > transform.position.x || playerXPos < transform.position.x && !_enemyController.GetPlayerIsDown(transform)
+        && !_enemyController.GetPlayerIsUp(transform)){
             StrictAnimationSwitch(IS_IDLE_SWINGING);
             SwingAnimationSwitch(true);
             RopeMove(playerXPos);
         }
-        else if(!CheckForGround() && _enemyController.GetPlayerIsDown(transform)){
+        else if(!CheckForGroundOnly() && _enemyController.GetPlayerIsDown(transform)){
+            Debug.Log("проблемный долбаеб");
             StrictAnimationSwitch(IS_FALLING);
             _rb.MovePosition(transform.position + Vector3.down * Time.fixedDeltaTime * _moveSpeed);
             ChangeState(States.Fall);
+        }
+        else if(_enemyController.GetPlayerIsUp(transform)){
+            Vector2 moveDirection = _enemyController.RaycastLaddersUp(transform);
+            StrictAnimationSwitch(IS_IDLE_SWINGING);
+            SwingAnimationSwitch(true);
+            FlipSprite(moveDirection);
+            MoveToLadder(moveDirection);
         }
         else{
             StrictAnimationSwitch(IS_IDLE_SWINGING);
@@ -113,6 +124,13 @@ public class Enemy : MonoBehaviour
             if(isBlocked){
                 StrictAnimationSwitch(IS_RUNNING);
                 Move(_enemyController.GetPlayerXPosition());
+            }
+            else if(!isBlocked && inLadderCollider && _enemyController.RaycastCheckPlayerOnSameHeight(transform)){
+                StrictAnimationSwitch(IS_RUNNING);
+                float playerY = _enemyController.GetPlayerYPosition();
+                transform.position = new Vector2(transform.position.x, playerY);
+                Move(_enemyController.GetPlayerXPosition());
+                ChangeState(States.Run);
             }
         }
         else if(_enemyController.RaycastCheckPlayerOnSameHeight(transform)){
@@ -308,6 +326,13 @@ public class Enemy : MonoBehaviour
     private void Die(){
         _gameManager.ProcessEnemyDeath(Id);
         Destroy(gameObject);
+    }
+
+    private IEnumerator EnemyInfo(){
+        while(true){
+            yield return new WaitForSeconds(3f);
+            Debug.Log(this + ": " + _currentState);
+        }
     }
 }
 
