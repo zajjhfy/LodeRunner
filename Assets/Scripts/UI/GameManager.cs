@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _gameSceneEnter;
-    [SerializeField] private GameObject _loseText;
-    [SerializeField] private GameObject _winText;
+    [SerializeField] private GameObject _loseGameObj;
+    [SerializeField] private GameObject _winGameObj;
     [SerializeField] private ScoreField _scoreField;
 
     [Header("SpawnSystem")]
@@ -22,6 +22,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerController _controller;
     [SerializeField] private PlayerTrigger _playerTrigger;
 
+    [Header("Buttons")]
+    [SerializeField] private ExitToMainButton _exitToMainButton;
+    [SerializeField] private ExitToMainButton _exitToMainButton2;
+    [SerializeField] private NextLevelButton _nextLevelButton;
+    [SerializeField] private RetryButton _retryButton;
+
     public static GameManager Instance { get; private set; }
 
     private void Awake(){
@@ -29,6 +35,40 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         _pauseMenu.SetActive(false);
         _gameSceneEnter.SetActive(true);
+    }
+
+    private void Start(){
+        _exitToMainButton.OnClick += ExitToMainMenuGame;
+        _retryButton.OnClick += RetryGame;
+        _nextLevelButton.OnClick += NextLevelGame;
+        _exitToMainButton2.OnClick += ExitToMainMenuGame;
+    }
+
+    private void NextLevelGame()
+    {
+        _winGameObj.SetActive(false);
+        _loseGameObj.SetActive(false);
+        int index = SceneManager.GetActiveScene().buildIndex + 1;
+        if(index == 3){
+            ExitToMainMenu();
+        }
+        else{
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
+    }
+
+    private void RetryGame()
+    {
+        _winGameObj.SetActive(false);
+        _loseGameObj.SetActive(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void ExitToMainMenuGame()
+    {
+        _winGameObj.SetActive(false);
+        _loseGameObj.SetActive(false);
+        ExitToMainMenu();
     }
 
     private void OnEnable(){
@@ -41,17 +81,17 @@ public class GameManager : MonoBehaviour
 
     private void FinishGame(object sender, EventArgs e)
     {
+        _controller.DisableInputMap();
         SoundManager.PlaySound(SoundType.Win, 0.5f);
-        _winText.SetActive(true);
+        _winGameObj.SetActive(true);
         Time.timeScale = 0;
-        StartCoroutine(ExitToMainMenuWait());
     }
 
     private void LoseGame(object sender, EventArgs e){
+        _controller.DisableInputMap();
         SoundManager.PlaySound(SoundType.Lose);
-        _loseText.SetActive(true);
+        _loseGameObj.SetActive(true);
         Time.timeScale = 0;
-        StartCoroutine(ExitToMainMenuWait());
     }
 
     private void _controller_OnGameStartPressed(object sender, EventArgs e)
@@ -83,19 +123,25 @@ public class GameManager : MonoBehaviour
     private void DisablePauseMenu(){
         if(_pauseMenu.activeSelf){
             _pauseMenu.SetActive(false);
-            Time.timeScale = 1;
         }
     }
 
     private void OnDisable(){
+        _exitToMainButton.OnClick -= ExitToMainMenuGame;
+        _retryButton.OnClick -= RetryGame;
+        _nextLevelButton.OnClick -= NextLevelGame;
+        _exitToMainButton2.OnClick -= ExitToMainMenuGame;
         _scoreField.OnGameFinish -= FinishGame;
         _controller.OnPauseButtonPressed -= _controller_OnPauseButtonPressed;
         _controller.OnExitButtonPressed -= _controller_OnExitButtonPressed;
     }
 
-    private void ExitToMainMenu(){
+
+
+    public void ExitToMainMenu(){
         _controller.DisableInputMap();
         DisablePauseMenu();
+        Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
 
@@ -107,18 +153,13 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitForEnemySpawn(int id){
         var spawnSprite = _enemySpawnIds[id].GetComponent<SpriteRenderer>();
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
         spawnSprite.sprite = _spawnSprite;
 
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
         spawnSprite.sprite = null;
         var enemy = Instantiate(_enemyPrefab, _enemySpawnIds[id].transform.position, Quaternion.identity);
         enemy.GetComponent<Enemy>().Id = id;
     }
 
-    private IEnumerator ExitToMainMenuWait(){
-        yield return new WaitForSecondsRealtime(5f);
-        Time.timeScale = 1;
-        ExitToMainMenu();
-    }
 }

@@ -10,6 +10,7 @@ public class PlayButton : MonoBehaviour
     [SerializeField] private GameObject _buttonsTransform;
     [SerializeField] private GameObject _levelsCanvas;
     [SerializeField] private ExitButton _exitButton;
+    private int _levelIndex = -1;
     private bool _onLevelSelection = false;
     private Shadow _playShadow;
 
@@ -49,5 +50,10 @@ public class PlayButton : MonoBehaviour
             _onLevelSelection = true;
             OnLevelSelection?.Invoke();
         }
+        else if(_levelIndex != -1){
+            SceneManager.LoadScene(_levelIndex);
+        }
     }
+
+    public void SetLevel(int levelIndex) => _levelIndex = levelIndex;
 }

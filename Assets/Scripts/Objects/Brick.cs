@@ -45,7 +45,7 @@ public class Brick : MonoBehaviour
     private IEnumerator BreakBlockCoroutine(){
         int i = 0;
         while(i < 7){
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.05f);
             _spriteRenderer.sprite = _breakingSprites[i];
             if(i < 4){
                 _particlesSpriteRenderer.sprite = _particleSprites[i];
