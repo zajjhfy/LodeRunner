@@ -2,9 +2,12 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+public enum States {Run, Climb, Break, Fall, Swing}
+
 public class Character : MonoBehaviour
 {
-    private enum States {Run, Climb, Break, Fall, Swing}
+    public States CurrentState => _currentState;
+    public static Character Instance {get; private set;}
 
     [Header("Layers")]
     [SerializeField] private LayerMask[] _layerMasks;
@@ -32,6 +35,7 @@ public class Character : MonoBehaviour
     private const string IS_BREAKING = "isBreaking";
     
     private void Awake(){
+        if(Instance == null) Instance = this;
         _animator = GetComponent<Animator>();
         _sr = GetComponent<SpriteRenderer>();
         _collider = GetComponent<CapsuleCollider2D>();

@@ -134,10 +134,10 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitForEnemySpawn(int id){
         var spawnSprite = _enemySpawnIds[id].GetComponent<SpriteRenderer>();
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(6f);
         spawnSprite.sprite = _spawnSprite;
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
         spawnSprite.sprite = null;
         var enemy = Instantiate(_enemyPrefab, _enemySpawnIds[id].transform.position, Quaternion.identity);
         enemy.GetComponent<Enemy>().Id = id;

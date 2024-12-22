@@ -28,34 +28,28 @@ public class EnemyController : MonoBehaviour
     public Vector3 RaycastLaddersUp(Transform enemyTransform){
         float rightDistanceToPlayer = 0f;
         float leftDistanceToPlayer = 0f;
-        float distance = Math.Abs(enemyTransform.position.x) + 10f;
-        float distanceToLadder = 0f;
+        float distance = Math.Abs(enemyTransform.position.x) + 12f;
 
         var ray = Physics2D.Raycast(enemyTransform.position, Vector2.right, distance, _ladderMask);
-        Debug.DrawRay(enemyTransform.position, Vector3.right * distance, Color.red);
+        
         if(ray.transform != null){
-            distanceToLadder = ray.distance;
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
                 ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
-                Debug.DrawRay(ladderPos, (_playerTransform.position - ladderPos).normalized * 25f, Color.red);
                 if(ray.transform != null){
-                    rightDistanceToPlayer = ray.distance + distanceToLadder;
+                    rightDistanceToPlayer = ray.distance;
                 }
             }
         }
 
-        distanceToLadder = 0f;
         ray = Physics2D.Raycast(enemyTransform.position, Vector2.left, distance, _ladderMask);
-        Debug.DrawRay(enemyTransform.position, Vector3.left * distance, Color.red);
+
         if(ray.transform != null){
-            distanceToLadder = ray.distance;
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
                 ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
-                Debug.DrawRay(ladderPos, (_playerTransform.position - ladderPos).normalized * 25f, Color.red);
                 if(ray.transform != null){
-                    leftDistanceToPlayer = ray.distance + distanceToLadder;
+                    leftDistanceToPlayer = ray.distance;
                 }
             }
         }
@@ -80,37 +74,33 @@ public class EnemyController : MonoBehaviour
     public Vector3 RaycastLaddersDown(Transform enemyTransform){
         float rightDistanceToPlayer = 0f;
         float leftDistanceToPlayer = 0f;
-        float distance = Math.Abs(enemyTransform.position.x) + 10f;
-        float distanceToLadder = 0f;
+        float distance = Math.Abs(enemyTransform.position.x) + 12f;
         Vector3 origin = new Vector3(enemyTransform.position.x, enemyTransform.position.y-1f);
 
         var ray = Physics2D.Raycast(origin, Vector2.right, distance, _ladderMask);
         Debug.DrawRay(origin, Vector3.right * distance, Color.red);
         if(ray.transform != null){
-            distanceToLadder = ray.distance;
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
 
                 ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
                 Debug.DrawRay(ladderPos, (_playerTransform.position - ladderPos).normalized * 25f, Color.red);
                 if(ray.transform != null){
-                    rightDistanceToPlayer = ray.distance + distanceToLadder;
+                    rightDistanceToPlayer = ray.distance;
                 }
             }
         }
 
-        distanceToLadder = 0f;
         ray = Physics2D.Raycast(origin, Vector2.left, distance, _ladderMask);
         Debug.DrawRay(origin, Vector3.left * distance, Color.red);
         if(ray.transform != null){
-            distanceToLadder = ray.distance;
             if(ray.transform.gameObject.CompareTag("Ladder")){
                 var ladderPos = ray.transform.gameObject.transform.position;
                 
                 ray = Physics2D.Raycast(ladderPos, (_playerTransform.position - ladderPos).normalized, 25f, _playerMask);
                 Debug.DrawRay(ladderPos, (_playerTransform.position - ladderPos).normalized * 25f, Color.red);
                 if(ray.transform != null){
-                    leftDistanceToPlayer = ray.distance + distanceToLadder;
+                    leftDistanceToPlayer = ray.distance;
                 }
             }
         }
@@ -135,11 +125,11 @@ public class EnemyController : MonoBehaviour
         float distance = Math.Abs(enemyTransform.position.x) + 12f;
 
         var ray = Physics2D.Raycast(enemyTransform.position, Vector3.left, distance, _playerMask);
-        Debug.DrawRay(enemyTransform.position, Vector3.left * distance, Color.cyan);
+
         if(ray) return true;
 
         ray = Physics2D.Raycast(enemyTransform.position, Vector3.right, distance, _playerMask);
-        Debug.DrawRay(enemyTransform.position, Vector3.right * distance, Color.cyan);
+
         if(ray) return true;
 
         return false;
@@ -164,5 +154,7 @@ public class EnemyController : MonoBehaviour
     public float GetPlayerXPosition() => _playerTransform.position.x;
 
     public float GetPlayerYPosition() => _playerTransform.position.y;
+
+    public States GetPlayerState() => Character.Instance.CurrentState;
     
 }

@@ -29,7 +29,7 @@ public class Brick : MonoBehaviour
     }
 
     private void ChangeCollider(){
-        _collider.offset = new Vector2(0f, -0.2f);
+        _collider.offset = new Vector2(0f, -0.5f);
         _collider.size = new Vector2(1f, 0.2f);
         gameObject.layer = 0;
         _collider.isTrigger = true;
